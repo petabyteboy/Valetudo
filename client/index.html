@@ -5,6 +5,7 @@
     <link rel="stylesheet" href="css/onsen-css-components.min.css">
     <link rel="manifest" href="/manifest.json">
     <script src="js/onsenui.min.js"></script>
+    <script src="js/Map.js"></script>
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#4285f4">
@@ -1350,14 +1351,14 @@
             <ons-progress-bar id="loading-bar-map" value="0" indeterminate="indeterminate"></ons-progress-bar>
 
             <div class="centered-map aspect-ratio">
-                <img id="current-map" class="fit-img fit-img-tight" src="" />
+                <div id="current-map" class="fit-img fit-img-tight"></div>
             </div>
 
             <script>
                 var currentRefreshTimer;
 
                 var loadingBar = document.getElementById('loading-bar-map');
-                var map = document.getElementById("current-map");
+                var mapdiv = document.getElementById("current-map");
 
                 //PNG of Robot
                 var rocky = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAfCAMAAAHGjw8oAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAADbUExURQAAAICAgICAgICAgICAgICAgHx8fH19fX19fYCAgIGBgX5+foCAgH5+foCAgH9/f39/f35+foCAgH9/f39/f4CAgH5+foGBgYCAgICAgIGBgX9/f39/f35+foCAgH9/f39/f4CAgIODg4eHh4mJiZCQkJycnJ2dnZ6enqCgoKSkpKenp62trbGxsbKysry8vL29vcLCwsXFxcbGxsvLy87OztPT09XV1d/f3+Tk5Ojo6Ozs7O3t7e7u7vHx8fLy8vPz8/X19fb29vf39/j4+Pn5+f39/f7+/v///9yECocAAAAgdFJOUwAGChgcKCkzOT5PVWZnlJmfsLq7wcrS1Nre4OXz+vr7ZhJmqwAAAAlwSFlzAAAXEQAAFxEByibzPwAAAcpJREFUKFNlkolaWkEMhYPggliBFiwWhGOx3AqCsggI4lZt8/5P5ElmuEX5P5hMMjeZJBMRafCvUKnbIqpcioci96owTQWqP0QKC54nImUAyr9k7VD1me4YvibHlJKpVUzQhR+dmdTRSDUvdHh8NK8nhqUVch7cITmXA3rtYDmH+3OL4XI1T+BhJUcXczQxOBXJuve0/daeUr5A6g9muJzo5NI2kPKtyRSGBStKQZ5RC1hENWn6NSRTrDUqLD/lsNKoFTNRETlGMn9dDoGdoDcT1fHPi7EuUDD9dMBw4+6vMQVyInnPXDsdW+8tjWfbYTbzg/OstcagzSlb0+wL/6k+1KPhCrj6YFhzS5eXuHcYNF4bsGtDYhFLTOSMqTsx9e3iyKfynb1SK+RqtEq70RzZPwEGKwv7G0OK1QA42Y+HIgct9P3WWG9ItI/mQTgvoeuWAMdlTRclO/+Km2jwlhDvinGNbyJH6EWV84AJ1wl8JowejqTqTmv+0GqDmVLlg/wLX5Mp2rO3WRs2Zs5fznAVd1EzRh10OONr7hhhM4ctevhiVVxHdYsbq+JzHzaIfdjs5CZ9tGInSfoWEXuL7//fwtn9+Jp7wSryDjBFqnOGeuUxAAAAAElFTkSuQmCC";
@@ -1367,79 +1368,31 @@
                 var img_charger = new Image();
                 img_charger.src = charger;
 
+                var xiaomiMap = new Map({viewportContainer: mapdiv});
+
 
 
                 function updateMapPage() {
-                    var canvas = document.createElement("canvas");
-                    var ctx = canvas.getContext('2d');
-
-                    var canvasrobot = document.createElement("canvas");
-                    var ctxrobot = canvasrobot.getContext('2d');
-
-                    var mapImageData;
-                    var first = true;
-                    var cold1, cold2; // old Coordinates
-
-                    canvas.height = 1024 * 4;
-                    canvas.width = 1024 * 4;
-
                     loadingBar.setAttribute("indeterminate", "indeterminate");
                     fn.request("api/map/latest", "GET", function (err, res) {
                         loadingBar.removeAttribute("indeterminate");
                         if (!err) {
-                            mapImageData = getMapImageData(res.map);
-                            mapImageData = scaleImageData(mapImageData, 4);
-
-                            ctx.putImageData(mapImageData, 0, 0);
-
-
-                            res.path.forEach(function (coord) {
-                                if (first) {
-                                    cold1 = coord[0];
-                                    cold2 = coord[1];
+                            function base64toArrayBuffer(data) {
+                                const raw = window.atob(data);
+                                const rawLength = raw.length;
+                                const buffer = new ArrayBuffer(rawLength);
+                                const array = new Uint8Array(buffer);
+                                for (let i = 0; i < rawLength; i++) {
+                                    array[i] = raw.charCodeAt(i);
                                 }
-                                else {
-                                    ctx.beginPath();
-                                    ctx.lineWidth = 2;
-                                    ctx.strokeStyle = "#FFFFFF";
-                                    ctx.moveTo(cold1, cold2);
-                                    ctx.lineTo(coord[0], coord[1]);
-                                    ctx.stroke();
+                                return buffer;
+                            }
 
-                                    cold1 = coord[0];
-                                    cold2 = coord[1];
-                                }
-                                first = false;
 
+                            xiaomiMap.updateMapData({
+                                map : base64toArrayBuffer(res.map),
+                                path: base64toArrayBuffer(res.path),
                             });
-
-                            ctx.drawImage(img_charger,canvas.height/2-img_charger.height/2,canvas.width/2-img_charger.width/2);
-
-                            if (res.path.length > 0) {
-                                var angle = Math.atan2(res.path[res.path.length - 1][1] - res.path[res.path.length - 2][1], res.path[res.path.length - 1][0] - res.path[res.path.length - 2][0]) * 180 / Math.PI;
-                                canvasrobot = rotateRobot(img_rocky, angle);
-                                ctx.drawImage(canvasrobot, res.path[res.path.length - 1][0] - 15, res.path[res.path.length - 1][1] - 15, img_rocky.width, img_rocky.height);
-                            }
-
-                            canvas = trimCanvas(canvas);
-
-                            if (window.innerWidth > window.innerHeight) {
-                                if (canvas.height > canvas.width) {
-                                    canvas = rotate90(canvas);
-                                }
-                            } else if (window.innerHeight > window.innerWidth) {
-                                if (canvas.width > canvas.height) {
-                                    canvas = rotate90(canvas);
-                                }
-                            }
-
-                            //The current aspect ratio map view won't scale the image beyond 100%
-                            //hence this hack was created
-                            while (window.innerWidth > canvas.width || window.innerHeight > canvas.height) {
-                                canvas = scaleCanvas(canvas, 2);
-                            }
-
-                            map.src = canvas.toDataURL();
                         } else {
                             ons.notification.toast(err, { buttonLabel: 'Dismiss', timeout: 1500 })
                         }

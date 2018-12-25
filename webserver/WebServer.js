@@ -697,10 +697,30 @@ const WebServer = function(options) {
                         }
                     }
                 });
-                res.json({
+
+                function toBuffer(data, path) {
+                    const elementSize = path ? 8 : 7;
+                    const t = Buffer.alloc(data.length * elementSize);
+                    for (let i=0; i<data.length; i++) {
+                        if(!path) {
+                            t.writeUInt32BE(data[i][0], i * 7);
+                            t.writeUInt8(data[i][1], i * 7 + 4);
+                            t.writeUInt8(data[i][2], i * 7 + 5);
+                            t.writeUInt8(data[i][3], i * 7 + 6);
+                        } else {
+                            t.writeUInt32BE(data[i][0], i * 8);
+                            t.writeUInt32BE(data[i][1], i * 8 + 4);
+                            // console.log(i * 8, data[i][0], data[i][1]);
+                        }
+                    }
+                    console.log(t);
+                    return t;
+                }
+
+                res.json({ //TODO: calculate and send map borders to fit map to screen
                     yFlipped: data.mapData.yFlipped,
-                    path: coords,
-                    map: data.mapData.map
+                    path: toBuffer(coords, true).toString('base64'),
+                    map: toBuffer(data.mapData.map).toString('base64')
                 });
             } else {
                 res.status(500).send(err.toString());
@@ -744,7 +764,7 @@ WebServer.PARSE_PPM_MAP = function(buf) {
 WebServer.PARSE_GRID_MAP = function(buf) {
     const map = [];
 
-    if(buf.length = WebServer.CORRECT_GRID_MAP_FILE_SIZE) {
+    if(buf.length === WebServer.CORRECT_GRID_MAP_FILE_SIZE) {
         for (let i = 0; i < buf.length; i++) {
             let px = buf.readUInt8(i);
 
