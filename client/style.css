@@ -1,0 +1,11 @@
+body {
+	background: linear-gradient(#f4f4f4, #cfcfcf) fixed;
+}
+
+canvas[is="vacuum-map"] {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 100%;
+	width: 100%;
+}

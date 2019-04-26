@@ -1,0 +1,13 @@
+{
+  "name": "valetudo-client",
+  "version": "0.3.1",
+  "devDependencies": {
+    "rollup": "^1.10.1",
+    "rollup-plugin-resolve": "^0.0.1-predev.1",
+    "rollup-plugin-terser": "^4.0.4"
+  },
+  "dependencies": {
+    "@material/mwc-fab": "^0.5.0",
+    "@material/mwc-icon": "^0.5.0"
+  }
+}
