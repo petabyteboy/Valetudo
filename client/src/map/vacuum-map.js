@@ -37,8 +37,8 @@ export class VacuumMap extends HTMLCanvasElement {
 		super(...arguments);
 		this.mapDrawer = new MapDrawer();
 		this.pathDrawer = new PathDrawer();
-		this.width = this.clientWidth;
-		this.height = this.clientHeight;
+		this.width = window.innerWidth;
+		this.height = window.innerHeight;
 		this.ws;
 		this.heartbeatTimeout;
 		this.locations = [];

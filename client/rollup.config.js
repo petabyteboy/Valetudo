@@ -1,29 +1,32 @@
-import pkg from './package.json';
+import pkg from "./package.json";
 import {terser} from "rollup-plugin-terser";
 import resolve from "rollup-plugin-node-resolve";
 export default [
 	{
-		input: 'src/index.js',
+		input: "src/index.js",
 		output: [
 			{
 				file: pkg.module,
-				format: 'es',
+				format: "es",
 				strict: true,
-				file: 'main.js',
+				file: "main.js",
+				sourceMap: "inline",
 			},
 		],
 		plugins: [
-			resolve(),
+			resolve({
+				sourceMap: true,
+			}),
 		],
 	},
-	{
-		input: 'src/index.js',
+/*	{
+		input: "src/index.js",
 		output: [
 			{
 				file: pkg.module,
-				format: 'es',
+				format: "es",
 				strict: true,
-				file: 'main.min.js',
+				file: "main.min.js",
 			},
 		],
 		plugins: [
@@ -34,5 +37,5 @@ export default [
 				},
 			}),
 		],
-	},
+	},*/
 ];

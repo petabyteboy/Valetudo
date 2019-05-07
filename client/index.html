@@ -8,16 +8,7 @@
 		<link rel="stylesheet" href="style.css">
 	</head>
 	<body>
-		<canvas is="vacuum-map" id="vacuum-map" api-url="/api/map/latest"></canvas>
-		<div id="fabs">
-			<valetudo-fab is="valetudo-fab" label="Go to dock" id="home" icon="home" api-url="/api/drive_home"></valetudo-fab>
-			<valetudo-fab is="valetudo-fab" label="Start cleanup" id="start" icon="play_arrow" api-url="/api/start_cleaning"></valetudo-fab>
-			<valetudo-fab is="valetudo-fab" label="Pause cleanup" id="pause" icon="pause" api-url="/api/pause_cleaning"></valetudo-fab>
-			<valetudo-fab is="valetudo-fab" label="Stop cleanup" id="stop" icon="stop" api-url="/api/stop_cleaning"></valetudo-fab>
-			<valetudo-fab is="valetudo-fab" label="Find robot" id="find" icon="volume_up" api-url="/api/find_robot"></valetudo-fab>
-			<valetudo-fab is="valetudo-fab" label="Spot cleanup" id="spot" icon="arrow_downwards" api-url="/api/spot_clean"></valetudo-fab>
-			<mwc-fab label="Go to selected point" id="goto" icon="arrow_right_alt"></mwc-fab>
-		</div>
+		<valetudo-layout></valetudo-layout>
 		<noscript>JavaScript is required to use Valetudo</noscript>
 	</body>
 	<script type="module" src="main.js"></script>

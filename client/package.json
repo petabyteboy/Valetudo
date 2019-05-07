@@ -7,7 +7,9 @@
     "rollup-plugin-terser": "^4.0.4"
   },
   "dependencies": {
-    "@material/mwc-fab": "^0.5.0",
-    "@material/mwc-icon": "^0.5.0"
+    "@authentic/mwc-card": "^0.4.7",
+    "@authentic/mwc-drawer": "^0.4.7",
+    "@authentic/mwc-fab": "^0.4.7",
+    "@authentic/mwc-tab-bar": "^0.4.7"
   }
 }
